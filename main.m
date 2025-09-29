@@ -7,14 +7,10 @@ addpath(genpath( ...
     genpath( ...
     "C:\Users\MIETHLINGER\Documents\MATLAB\tensor_toolbox-v3.6"))
 
-%Now we want to initialize a network-preparable state, for this we will
-%prepare a separate file containing a function that returns a vector of a
-%network separable state, in this case randomly chosen, with the dimension
-%of the subsystems prepared by each source specified here.
-
-%The way that I have been writing the code, its also possible to impose a
-%different dimension on each source, but for simplicity sake, I kept it at
-%the same dimension
+%Now we want to initialize a network-preparable state, in this case with
+%three bipartite sources, that each prepare a state with a number of
+%Schmidt coefficients d. In principal one could impose a different
+%dimension for each source.
 
 num_sources = 3;
 d = 4;
