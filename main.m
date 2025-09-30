@@ -13,8 +13,8 @@ addpath(genpath( ...
 %dimension for each source.
 
 num_sources = 3;
-d = 4;
+d = 2;
 dim = zeros(1, num_sources) + d;
 
 
-a = randnetworkstate(dim)
+[a, coeff] = randnetworkstate(dim)

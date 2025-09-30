@@ -2,14 +2,17 @@
 %state, based on the dimensions given as input, which specify the
 %entanglement dimensionality/# of Schmidt coefficients for each source.
 
-function state = randnetworkstate(dim)
+%The function returns the state in tensor form and a matrix of Schmidt
+%coefficients, where the columds correspond to the sources and the rows
+%show each Schmidt coefficient.
+function [state, schmidt_coeff] = randnetworkstate(dim)
     %unitaries by parties
     unitaries = arrayfun(@(x) RandomUnitary(x^2), dim, 'uni', 0);
 
     %schmidt coefficients of states prepared by sources + normalization
     schmidt_coeff = rand(max(dim), length(dim));
     weights = vecnorm(schmidt_coeff);
-    schmidt_coeff = schmidt_coeff./weights;
+    schmidt_coeff = sort(schmidt_coeff./weights, 'descend');
     
     %matrix of indices where each Schmidt coefficient goes in our source
     %states, i.e., |ii>, i ∈ {0,...,d-1}. Here we change the index to be
@@ -29,8 +32,13 @@ function state = randnetworkstate(dim)
     end
     cellstate = num2cell(states, 1);
     
-    %state prepared by sources, but we only need the tensor for later
-    %purposes, so we will instead contruct the tensor, rather than do
-    %further computations with the state vector itself.
-    %state = dec2base(find(Tensor(cellstate))-1, dim(1)^2)
+    %state prepared by sources, permuted into parties, and reshaped into
+    %needed tensor.
+    state = Tensor(cellstate);
+    state = PermuteSystems(state, [6, 1, 2, 3, 4, 5]);
+    state = tensor(reshape(state, dim.^2));
+    
+    %Multiply each mode of the tensor with random unitaries next
+    state = ttm(state, unitaries, [1, 2, 3]);
+
 end
