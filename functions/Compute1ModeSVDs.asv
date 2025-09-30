@@ -1,0 +1,9 @@
+function [outputArg1,outputArg2] = Compute1ModeSVDs(inputTensor)
+%Compute1ModeSVDs(inputTensor) computes the n-th mode SVDs of inputTensor
+%   We will reshape our tensor into a matrix, i.e. 2-mode tensor, and then
+%   just compute the SVD in the usual way, yielding the SVD for each mode.
+%   Alternative:
+outputArg1 = inputArg1;
+outputArg2 = inputArg2;
+end
+
