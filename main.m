@@ -23,8 +23,12 @@ dim = zeros(1, num_sources) + d;
 %Calling the function to get the state and Schmidt coefficients
 [test, coeff] = PrepareRandomNetworkState(dim);
 
-test1 = Compute1ModeSVDs(test);
-for i = 1:ndims(test1)
-    test1(i, :, :)
-end
-sum(sum((double(test1(1,:,:).^2))))
+%Testing the n mode SVDs function
+%test1 = Compute1ModeSVDs(test);
+%for i = 1:ndims(test1)
+%    test1(i, :, :)
+%end
+%sum(sum((double(test1(1,:,:).^2))))
+
+%Testing the CheckDegeneracy function
+CheckDegeneracy(test)
