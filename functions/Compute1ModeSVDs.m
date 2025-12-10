@@ -6,28 +6,29 @@ function SingleModeSVDs = Compute1ModeSVDs(inputTensor)
 %   the marginals and then just diagonalize that, but in this case we will
 %   build a more general function first.
 
-    %We start at the beginning. nmodes corresponds to the number of
-    %parties, i.e., each mode has its own spectrum that we need to check.
-    %Creating a dimensions dummy as well, because we need to access to
-    %dimensions of the tensor
+%   We start at the beginning. nmodes corresponds to the number of
+%   parties, i.e., each mode has its own spectrum that we need to check.
+%   Creating a dimensions dummy as well, because we need to access to
+%   dimensions of the tensor
     nmodes = ndims(inputTensor);
     dimensions = size(inputTensor);
     
-    %This is for now just an empty tensor that has space for for each
-    %matrix SVD. The number nmodes tells us how many SVDs we will have, the
-    %largest dimension tells us in one direction how large the SVD will be,
-    %and the largest thing that we compute afterwards tells us how large
-    %the other largest dimension will be. Because the number of nonzero
-    %singular values is upper bound by the smaller of the latter two, it
-    %would actually suffice to just create a [nmodes, max(d), max(d)]
-    %tensor. Maybe I will change that to simplify it.
+%   This is for now just an empty tensor that has space for for each
+%   matrix SVD. The number nmodes tells us how many SVDs we will have, the
+%   largest dimension tells us in one direction how large the SVD will be,
+%   and the largest thing that we compute afterwards tells us how large
+%   the other largest dimension will be. Because the number of nonzero
+%   singular values is upper bound by the smaller of the latter two, it
+%   would actually suffice to just create a [nmodes, max(d), max(d)]
+%   tensor. Maybe I will change that to simplify it.
     SingleModeSVDs = tenzeros( ...
         [nmodes, max(dimensions), ...
-        max(prod(nchoosek(dimensions, nmodes - 1), [2]))] ...
+        max(prod(nchoosek(dimensions, nmodes - 1), 2))] ...
         );
-    %Here we just save the n-mode matricized tensor in its SVD form
+
+%   Here we just save the n-mode matricized tensor in its SVD form
     for i = 1:nmodes
-        [U, S, V] = svd(double(tenmat(inputTensor, i)));
+        [~, S, ~] = svd(double(tenmat(inputTensor, i)));
         SingleModeSVDs(i, :, :) = tensor(S);
     end
     

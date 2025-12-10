@@ -33,3 +33,4 @@ dim = zeros(1, num_sources) + d;
 %Testing the CheckDegeneracy function
 IsPreparable(test)
 
+CanonicalNetworkTensor(dim)
