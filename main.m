@@ -31,6 +31,4 @@ dim = zeros(1, num_sources) + d;
 %sum(sum((double(test1(1,:,:).^2))))
 
 %Testing the CheckDegeneracy function
-IsPreparable(test)
-
-CanonicalNetworkTensor(dim)
+IsPreparable(test, dim)

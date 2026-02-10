@@ -1,0 +1,47 @@
+function correctPermutation = CheckPermutations(inputTensor, dim)
+%This function checks all the permutations of local levels to bring the
+%matrix of non-zero elements into the canonical form of a network tensor
+
+%   It is important to note that there are several constraints on which
+%   form the tensor can even take, these can all be implemented as checks
+%   to weed out tensors which cannot be brought into the canonical form. I
+%   will implement these at some point in the future hopefully.
+    canonicalTensor = CanonicalNetworkTensor(dim);
+    localDim = sortrows(canonicalTensor(end, 1));
+    numPerm = factorial(localDim - 1);
+    modes = length(dim);
+
+%   The first step is to check whether the last and first row of the two
+%   matrices are the same. If they are not, then it is not possible to find
+%   a permutation of the local levels to bring it into the canonical form.
+%   This is because, by construction, the |000> and |d-1 d-1 d-1> level in
+%   our state will have the largest and lowest n-1 mode singular values, 
+%   and therefore will be in the correct positions already.
+    if ~and(inputTensor(1,:)==canonicalTensor(1,:),...
+        inputTensor(end,:)==canonicalTensor(end,:))
+        correctPermutation = false;
+        return
+    end
+
+%   We want to compute the levels which potentially have to be permuted.
+%   Which are all levels between 2 (i.e., one above the 1 (which
+%   corresponds to |0>)) and the localDim-1 level (which corresponds to 
+%   |d-2>). Then we compute all the permutations of these levels and append
+%   the first and last level to the list (which don't have to be permuted).
+    levels = 1:localDim-1;
+    permLevels = perms(levels);
+    permLevels = [zeros(size(permLevels, 1), 1), permLevels, ...
+        localDim*ones(size(permLevels, 1), 1)];
+    permLevelsModes = repmat(permLevels, 1, modes);
+
+%   Now we basically need to try out the each of the permutations for each
+%   mode randomly.
+
+    iter = randperm(numPerm^modes);
+    sz = numPerm*ones(1, modes);
+    subs = cell(1, modes);
+    for i = iter
+        [subs{:}] = ind2sub(sz, i);
+    end
+    correctPermutation = permLevels;
+end
