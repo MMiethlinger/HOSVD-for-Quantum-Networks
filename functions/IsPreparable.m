@@ -4,8 +4,8 @@ function isPreparable = IsPreparable(inputState, dim)
 
 %   We first check whether state has degenerate spectra at the level of the
 %   parties, to ensure that our criterion still applies. Then we compute
-%   the HOSVD of the state, followed by permutations as specificied and
-%   lastly computing the Schmidt coefficients
+%   the HOSVD of the state, followed by applying the unitaries determined
+%   via the marginals, and then checking equivalence.
 
     rel = 1e-14;
 
@@ -20,14 +20,8 @@ function isPreparable = IsPreparable(inputState, dim)
     state = hosvd(inputState,rel).core;
     doubleState = double(state);
 
-%   NonZeroElements gives us the indices of our non-zero elements in the
-%   tensor
-    nonZeros = NonZeroElements(doubleState);
-    
-%   Next we need to check for which permutation the tensor is brought into
-%   the canonical form
-%   For this we call a function which brute force tries all the
-%   permutations and check if the tensor is in the canonical form then
-    isPreparable = CheckPermutations(nonZeros, dim);
+%   Now we need to compute the two party marginals and determine the
+%   Schmidt coefficients from them.
+    coeff = CoefficientsFromMarginals(doubleState);
 
 end
