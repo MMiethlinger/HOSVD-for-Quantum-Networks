@@ -1,4 +1,4 @@
-function isPreparable = IsPreparable(inputState, dim)
+function isPreparable = IsPreparable(inputState, dim, N)
 %IsPreparable(state) checks whether a state fulfills the criterion that we
 %discovered.
 
@@ -22,6 +22,7 @@ function isPreparable = IsPreparable(inputState, dim)
 
 %   Now we need to compute the two party marginals and determine the
 %   Schmidt coefficients from them.
-    coeff = CoefficientsFromMarginals(doubleState);
+    coeff = CoefficientsFromMarginals(doubleState, dim, N);
+    
 
 end

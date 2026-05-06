@@ -1,4 +1,4 @@
-function [state, schmidtCoeff] = PrepareRandomNetworkState(dim)
+function [state, schmidtCoeff] = RandomNetworkState(dim, N)
 %PrepareRandomNetworkState(dim) computes a random network-separable state. 
 %   dim -> dimensions of sources given as input, which specify the 
 %   entanglement dimensionality/# of Schmidt coefficients for each source. 

@@ -18,10 +18,14 @@ addpath( ...
 %dimension for each source.
 num_sources = 3;
 d = 2;
+connectivity = [0, 1, 1; 1, 0, 1; 1, 1, 0];
+N = graph(connectivity);
+%labelnode(N, N.Nodes, char(65:64 + numnodes(N)))
 dim = zeros(1, num_sources) + d;
+%plot(N)
 
 %Calling the function to get the state and Schmidt coefficients
-[test, coeff] = PrepareRandomNetworkState(dim);
+[test, coeff] = RandomNetworkState(dim, N);
 
 %Testing the n mode SVDs function
 %test1 = Compute1ModeSVDs(test);
@@ -30,6 +34,6 @@ dim = zeros(1, num_sources) + d;
 %end
 %sum(sum((double(test1(1,:,:).^2))))
 
-%Testing the CheckDegeneracy function
-IsPreparable(test, dim)
+%Testing the IsPreparable function
+IsPreparable(test, dim, N)
 coeff
