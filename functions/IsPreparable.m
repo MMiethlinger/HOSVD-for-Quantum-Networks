@@ -14,6 +14,7 @@ function isPreparable = IsPreparable(inputState, dim, N)
 %   IsDegenerate.
     if IsDegenerate(inputState)==false
         disp("hell no")
+        error('IsPreparable:Degenerate','The local spectra of the state must be non-degenerate.')
     end
     
 %   Next step is to compute the HOSVD of the tensor of our state.
