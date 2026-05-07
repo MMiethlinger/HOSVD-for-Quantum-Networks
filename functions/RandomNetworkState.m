@@ -14,7 +14,7 @@ function [state, schmidtCoeff] = RandomNetworkState(dim, N)
     weights = vecnorm(schmidtCoeff);
     schmidtCoeff = sort(schmidtCoeff./weights, 'descend');
     
-    state = NetworkStateFromCoefficients(schmidtCoeff, N);
+    [state, ~] = NetworkStateFromCoefficients(schmidtCoeff, N);
     
 %   Multiply each mode of the tensor with random unitaries next
     state = ttm(state, unitaries, [1, 2, 3]);

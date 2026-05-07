@@ -1,9 +1,10 @@
-function coeff = CoefficientsFromMarginals(state, dim, N)
+function coeff = CoefficientsFromMarginals(inputState, dim, N)
 %CoefficientsFromMarginals determines the Schmidt coefficients via the
 %marginals and then outputs them.
 
 %   First we need to compute the marginals of the state, as well as the
 %   necessary information about the network graph
+    state = double(inputState);
     dims = size(state);
     vector = reshape(state, 1, numel(state));
     parties = 1:numnodes(N);
