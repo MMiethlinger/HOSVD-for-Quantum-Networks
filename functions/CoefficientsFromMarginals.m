@@ -27,7 +27,7 @@ function coeff = CoefficientsFromMarginals(inputState, dim, N)
 %   eigenvectors with finite eigenvalue.
         [V, ~] = eig(marginal);
         S = SchmidtDecomposition(V(:, end));
-        S(S < 1e-15) = [];
+        S(S < 1e-14) = [];
         S(end+1:max(dim)) = 0;
         coeff(:, p) = S;
     end

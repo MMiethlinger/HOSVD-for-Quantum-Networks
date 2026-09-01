@@ -31,15 +31,37 @@ function isPreparable = IsPreparable(inputState, dim, N)
         unitaries{i} = HOSVD.U{i};
     end
     state = ttm(state, unitaries, 1:numParties);
+
+%   First check whether the state is preparable by comparing the absolute
+%   values (necessary for preparability)
+    state_abs = abs(double(state));
+
+    if abs(state_abs - double(reconstructedState)) > ...
+        rel*ones(size(state_abs))
+        isPreparable = false;
+        return
+    end
+
     state = reshape(double(state), 1, []);
     state = PermuteSystems(state, idx);
+    state = reshape(state, size(reconstructedState));
 
-    numEdges = numedges(N);
-    numSubystems = 1:numEdges;
-    for i = 1:numEdges
-        traceOut = numSubystems;
-        traceOut([2*i - 1, 2*i]) = [];
-        sourceState = PartialTrace(state, traceOut);
-        
-    end
+%    state = reshape(double(reconstructedState), 1, []);
+%    state = PermuteSystems(state, idx);
+
+
+    %NonZeroElements(state)
+
+%   Solve the final Equation, by finding the phases for the diagonal
+%   unitaries.
+    unitary = findUnitaries(state, reconstructedState);
+    state = ttvunitary*state
+
+%   Checking purity
+    %numEdges = numedges(N);
+    %numSubsystems = 2*numEdges;
+    %subsystems = 1:numSubsystems;
+    %subsysDims = zeros(numSubsystems, 1) + reshape([dim; dim], [], 1);
+    
+
 end
