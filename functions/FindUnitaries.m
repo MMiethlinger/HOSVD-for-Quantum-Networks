@@ -1,4 +1,4 @@
-function unitary = findUnitaries(realState, testState)
+function unitary = FindUnitaries(realState, testState)
 %findUnitaries finds the Unitaries necessary to cancel the complex phases
 %that the HOSVD does not cancel
 
@@ -12,8 +12,9 @@ function unitary = findUnitaries(realState, testState)
 
 %   Solve equations, with angles vals[i]
     T_sparse = sparse(rows, cols, vals, N, M*K);
-    tol = 1e-13;
-    vals = angle(realState(abs(double(realState)) > tol));
+    tol = 1e-10;
+    state = double(realState);
+    vals = -angle(state(abs(state) > tol));
     theta = T_sparse\vals;
 
 %   Put into diagonal unitaries
@@ -22,7 +23,7 @@ function unitary = findUnitaries(realState, testState)
 
     U = cell(1, length(d));
     for k = 1:length(d)
-        theta_k = -theta(idx + 1 : idx + d(k));
+        theta_k = theta(idx + 1 : idx + d(k));
         U{k} = diag(exp(1i * theta_k));
         idx = idx + d(k);
     end

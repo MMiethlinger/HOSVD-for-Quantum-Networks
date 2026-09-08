@@ -1,4 +1,4 @@
-function isPure = allMarginalsPure(psi, tol)
+function isPure = AllMarginalsPure(psi, tol)
 
 if nargin < 2
     tol = 1e-10;

@@ -44,7 +44,11 @@ function isPreparable = IsPreparable(inputState, dim, N)
 
 %   Solve the equations that yield the phases for the diagonal
 %   unitaries.
-    unitary = findUnitaries(state, reconstructedState);
+    T = state;
+    R = reconstructedState;
+    save('tensors.mat', 'T', 'R', '-v7');
+    [unitary, ~] = FindPhaseUnitaries(state, reconstructedState, 1e-6, true);
+    unitary
     state = ttm(tensor(state), unitary);
 
 %   Order state into partitioning by sources
@@ -53,7 +57,9 @@ function isPreparable = IsPreparable(inputState, dim, N)
     state = reshape(state, size(reconstructedState));
 
 %   Checking purity
-    allMarginalsPure(state)
+    if allMarginalsPure(state) == 0
+        state
+    end
     
 
 end
