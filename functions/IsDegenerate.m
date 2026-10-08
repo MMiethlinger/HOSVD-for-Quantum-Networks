@@ -13,6 +13,6 @@ function isDegenerate = IsDegenerate(inputTensor)
     isDegenerate = true;
     for i = 1:ndims(nmodeSVDs)
         [~, singularvalues] = find(nmodeSVDs(i, :, :));
-        isDegenerate = and(isDegenerate,allunique(singularvalues));
+        isDegenerate = and(isDegenerate, allunique(singularvalues));
     end
 end

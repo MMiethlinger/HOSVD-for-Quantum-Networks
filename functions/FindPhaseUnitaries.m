@@ -1,4 +1,4 @@
-function [U, ok] = FindPhaseUnitaries(T, R, tol, verbose)
+function [U, ok] = FindPhaseUnitaries(Tt, Rt, tol, verbose)
 %FindPhaseUnitaries Recover per-mode diagonal-unitary phases relating T to R.
 %   [U, OK] = FindPhaseUnitaries(T, R) finds, for an N-mode array T (complex)
 %   and R (real, nonnegative, same size, same nonzero pattern and same
@@ -8,7 +8,10 @@ function [U, ok] = FindPhaseUnitaries(T, R, tol, verbose)
 %   OK is true if a consistent solution was found, false if T and R are
 %   not related by diagonal unitaries (within TOL).
 
-if nargin < 3 || isempty(tol),     tol = 1e-6;   end
+T = double(Tt);
+R = double(Rt);
+
+if nargin < 3 || isempty(tol),     tol = 1e-19;   end
 if nargin < 4 || isempty(verbose), verbose = false; end
 sz = size(R);
 if ~isequal(size(T), sz)
@@ -124,7 +127,8 @@ if ~all_touched_known
         end
     end
  
-    sol = A \ rhs_fixed;
+    %sol = A \ rhs_fixed;
+    sol = lsqminnorm(A, rhs_fixed);
     for d = 1:N
         Uvals{d} = exp(1i*sol(offset(d)+1 : offset(d)+sz(d)));
     end

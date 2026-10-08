@@ -6,17 +6,17 @@ function [state, schmidtCoeff] = RandomNetworkState(dim, N)
 %   coefficients, where the columns correspond to the sources and the rows 
 %   show each Schmidt coefficient.
 
-%   unitaries by parties
-    unitaries = arrayfun(@(x) RandomUnitary(x^2), dim, 'uni', 0);
-
 %   schmidt coefficients of states prepared by sources + normalization
     schmidtCoeff = rand(max(dim), length(dim));
     weights = vecnorm(schmidtCoeff);
     schmidtCoeff = sort(schmidtCoeff./weights, 'descend');
     
     [state, ~] = NetworkStateFromCoefficients(schmidtCoeff, N);
-    
+
+%   unitaries by parties
+    unitaries = arrayfun(@(x) RandomUnitary(x), size(state), 'uni', 0);
+
 %   Multiply each mode of the tensor with random unitaries next
-    state = ttm(state, unitaries, [1, 2, 3]);
+    state = ttm(state, unitaries);
     
 end

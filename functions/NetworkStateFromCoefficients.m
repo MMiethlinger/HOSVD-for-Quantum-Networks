@@ -14,7 +14,6 @@ function [state, inv_idx] = NetworkStateFromCoefficients(coeff, N)
     edges = table2array(N.Edges(:,1));
     subsystems = zeros(2, 2*length(edges));
     state = ones(1);
-
 %   subsystems is supposed to contain the initial ordering of the
 %   subsystems when constructing the state. This is useful, because this
 %   ordering can then be used to permute the subsystems into the by-Parties

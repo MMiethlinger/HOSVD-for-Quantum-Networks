@@ -9,8 +9,7 @@ function coeff = CoefficientsFromMarginals(inputState, dim, N)
     vector = reshape(state, 1, numel(state));
     parties = 1:numnodes(N);
     edges = table2array(N.Edges(:,1));
-    coeff = zeros(max(dim), length(parties));
-
+    coeff = zeros(max(dim), length(edges));
 
     for p = 1:length(edges)
 %   For simplicity sake, we will compute the marginals, eigenvectors, and 
@@ -27,7 +26,7 @@ function coeff = CoefficientsFromMarginals(inputState, dim, N)
 %   eigenvectors with finite eigenvalue.
         [V, ~] = eig(marginal);
         S = SchmidtDecomposition(V(:, end));
-        S(S < 1e-14) = [];
+        S(S < 1e-13) = [];
         S(end+1:max(dim)) = 0;
         coeff(:, p) = S;
     end

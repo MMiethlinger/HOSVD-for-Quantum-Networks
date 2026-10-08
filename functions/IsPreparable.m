@@ -7,7 +7,7 @@ function isPreparable = IsPreparable(inputState, dim, N)
 %   the HOSVD of the state, followed by applying the unitaries determined
 %   via the marginals, and then checking equivalence.
     numParties = numnodes(N);
-    rel = 1e-14;
+    rel = 1e-13;
 
 %   First we check if the state is even suitable for our criterion, i.e.,
 %   does it have degenerate n-th mode spectra. For this we call
@@ -18,14 +18,14 @@ function isPreparable = IsPreparable(inputState, dim, N)
     end
     
 %   Next step is to compute the HOSVD of the tensor of our state.
-    state = hosvd(inputState,rel).core;
+    state = hosvd(inputState, rel, 'verbosity', 0).core;
 
 %   Now we need to compute the two party marginals and determine the
 %   Schmidt coefficients from them.
     coeff = CoefficientsFromMarginals(state, dim, N);
     [reconstructedState, idx] = NetworkStateFromCoefficients(coeff, N);
     
-    HOSVD = hosvd(reconstructedState, rel);
+    HOSVD = hosvd(reconstructedState, rel, 'verbosity', 0);
     unitaries = cell(numParties, 1);
     for i = 1:numParties
         unitaries{i} = HOSVD.U{i};
@@ -44,12 +44,15 @@ function isPreparable = IsPreparable(inputState, dim, N)
 
 %   Solve the equations that yield the phases for the diagonal
 %   unitaries.
-    T = state;
-    R = reconstructedState;
-    save('tensors.mat', 'T', 'R', '-v7');
-    [unitary, ~] = FindPhaseUnitaries(state, reconstructedState, 1e-6, true);
-    unitary
-    state = ttm(tensor(state), unitary);
+    %T = state;
+    %R = reconstructedState;
+    %save('tensors.mat', 'T', 'R', '-v7');
+    warnState = warning('off', 'MATLAB:rankDeficientMatrix');
+    [U, ~] = FindPhaseUnitaries(state, reconstructedState, 1e-9, true);
+    warning(warnState);
+    phaseUnitary = cellfun(@diag, U, 'UniformOutput', false);
+    Uinv = cellfun(@ctranspose, phaseUnitary, 'UniformOutput', false);
+    state = ttm(state, Uinv);
 
 %   Order state into partitioning by sources
     state = reshape(double(state), 1, []);
@@ -57,9 +60,6 @@ function isPreparable = IsPreparable(inputState, dim, N)
     state = reshape(state, size(reconstructedState));
 
 %   Checking purity
-    if allMarginalsPure(state) == 0
-        state
-    end
-    
+    isPreparable = AllMarginalsPure(state);
 
 end
