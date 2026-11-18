@@ -47,10 +47,10 @@ addpath( ...
 %variances = zeros(1, length(dims));
 
 dim = 2;
-%numTrials  = 10*ones(1, 10);
+%numTrials  = [10^6, 28*10^4, 2400, 10];
 numTrials = (1);
-%networkSize = [3,4,5,6,7,8,9,10];
-networkSize = (5);
+%networkSize = [3,4,5,6];
+networkSize = (4);
 means     = zeros(1, length(networkSize));
 variances = zeros(1, length(networkSize));
 

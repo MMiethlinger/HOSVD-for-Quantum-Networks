@@ -22,13 +22,13 @@ function SingleModeSVDs = Compute1ModeSVDs(inputTensor)
 %   would actually suffice to just create a [nmodes, max(d), max(d)]
 %   tensor. Maybe I will change that to simplify it.
     SingleModeSVDs = tenzeros( ...
-        [nmodes, max(dimensions), ...
-        max(prod(nchoosek(dimensions, nmodes - 1), 2))] ...
-        );
-
+        [nmodes, max(dimensions), 1]);%, ...
+        %max(prod(nchoosek(dimensions, nmodes - 1), 2))] ...
+        %);
 %   Here we just save the n-mode matricized tensor in its SVD form
     for i = 1:nmodes
-        [~, S, ~] = svd(double(tenmat(inputTensor, i)));
+        %[~, S, ~] = svd(double(tenmat(inputTensor, i)));
+        S = svd(double(tenmat(inputTensor, i)));
         SingleModeSVDs(i, :, :) = tensor(S);
     end
     
