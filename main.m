@@ -48,7 +48,7 @@ addpath( ...
 
 dim = 2;
 %numTrials  = [10^6, 28*10^4, 2400, 10];
-numTrials = [50, 50]%[10^5, 10^5];
+numTrials = [10^5, 10^5]%[10^5, 10^5];
 %networkSize = [3,4,5,6];
 networkSize = [3, 4];
 means     = zeros(1, length(networkSize));

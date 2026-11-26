@@ -19,7 +19,8 @@ infoFinal = nan(1,numTrials);
 
 for trial = 1:numTrials
     if mod(trial, 20000) == 0
-        save('diagnostics_partial.mat', 'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal');
+        save(sprintf('diagnostics_partial_size%d_dim%d.mat', networkSize, dim), ...
+     'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal');
     end
     seedState = rng;   % snapshot the RNG state before this trial's randomness is drawn
     
@@ -41,7 +42,7 @@ for trial = 1:numTrials
         fprintf('  in %s (line %d)\n', ME.stack(s).name, ME.stack(s).line);
         end
         %save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'dim', 'numTrials');
-        save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'networkSize', 'dim', 'numTrials');
+        save(sprintf('failcase_size%d_dim%d_trial%d.mat', networkSize, dim, trial), 'seedState', 'networkSize', 'dim', 'numTrials');
         numFailed = numFailed + 1;
         continue;
     end
@@ -50,7 +51,7 @@ for trial = 1:numTrials
 
     if result == 0
         failed(trial) = true;
-        save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'networkSize', 'dim', 'numTrials');
+        save(sprintf('failcase_size%d_dim%d_trial%d.mat', networkSize, dim, trial), 'seedState', 'networkSize', 'dim', 'numTrials');
         numFailed = numFailed + 1;
         continue;
     end
@@ -60,7 +61,7 @@ end
 successfulTimes = times(times > 0);
 ts = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
 save(sprintf('diagnostics_size%d_dim%d_n%d_%s.mat', networkSize, dim, numTrials, ts), ...
-     'gaps', 'maxDiffs', 'failed', 'threw', 'infoMag', 'infoCycle', 'infoFinal');
+     'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal');
 filename = sprintf('successful_times_size%d_n%d_%s.mat', networkSize, numTrials, ts);
 save(filename, 'successfulTimes');
 
