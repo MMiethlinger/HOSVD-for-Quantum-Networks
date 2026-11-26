@@ -9,22 +9,39 @@ d = zeros(1, numedges(N)) + dim;
 times = zeros(1, numTrials);
 numFailed = 0;
 
+gaps     = nan(1, numTrials);
+maxDiffs = nan(1, numTrials);
+failed   = false(1, numTrials);
+threw    = false(1, numTrials);
+infoMag = nan(1,numTrials); 
+infoCycle = nan(1,numTrials); 
+infoFinal = nan(1,numTrials);
 
 for trial = 1:numTrials
+    if mod(trial, 20000) == 0
+        save('diagnostics_partial.mat', 'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal');
+    end
+    seedState = rng;   % snapshot the RNG state before this trial's randomness is drawn
+    
     % Calling the function to get a state
-    [test, ~] = RandomNetworkState(d, N);
+    [test, coeff] = RandomNetworkState(d, N);
+    gaps(trial) = MinSpectralGap(coeff, N);
     t0 = tic;
     
-    seedState = rng;   % snapshot the RNG state before this trial's randomness is drawn
     try
-        result = IsPreparable(test, d, N);
+        [result, maxDiffs(trial), info] = IsPreparable(test, d, N);
+        infoMag(trial) = info.mag;  
+        infoCycle(trial) = info.cycle;  
+        infoFinal(trial) = info.final;
     catch ME
+        threw(trial) = true;
+        failed(trial) = true;
         fprintf('Error: %s\n', ME.message);
         for s = 1:numel(ME.stack)
         fprintf('  in %s (line %d)\n', ME.stack(s).name, ME.stack(s).line);
         end
         %save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'dim', 'numTrials');
-        save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'networkSize', 'numTrials');
+        save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'networkSize', 'dim', 'numTrials');
         numFailed = numFailed + 1;
         continue;
     end
@@ -32,7 +49,8 @@ for trial = 1:numTrials
     times(trial) = toc(t0);
 
     if result == 0
-        save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'networkSize', 'numTrials');
+        failed(trial) = true;
+        save(sprintf('failcase_trial%d.mat', trial), 'seedState', 'networkSize', 'dim', 'numTrials');
         numFailed = numFailed + 1;
         continue;
     end
@@ -41,6 +59,8 @@ end
 
 successfulTimes = times(times > 0);
 ts = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
+save(sprintf('diagnostics_size%d_dim%d_n%d_%s.mat', networkSize, dim, numTrials, ts), ...
+     'gaps', 'maxDiffs', 'failed', 'threw', 'infoMag', 'infoCycle', 'infoFinal');
 filename = sprintf('successful_times_size%d_n%d_%s.mat', networkSize, numTrials, ts);
 save(filename, 'successfulTimes');
 

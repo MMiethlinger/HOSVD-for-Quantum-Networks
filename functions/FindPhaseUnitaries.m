@@ -1,4 +1,4 @@
-function [U, ok] = FindPhaseUnitaries(Tt, Rt, tol, verbose)
+function [U, ok, info] = FindPhaseUnitaries(Tt, Rt, tol, verbose)
 %FindPhaseUnitaries Recover per-mode diagonal-unitary phases relating T to R.
 %   [U, OK] = FindPhaseUnitaries(T, R) finds, for an N-mode array T (complex)
 %   and R (real, nonnegative, same size, same nonzero pattern and same
@@ -7,7 +7,7 @@ function [U, ok] = FindPhaseUnitaries(Tt, Rt, tol, verbose)
 %       T(i1,...,iN) = R(i1,...,iN) * U{1}(i1) * U{2}(i2) * ... * U{N}(iN)
 %   OK is true if a consistent solution was found, false if T and R are
 %   not related by diagonal unitaries (within TOL).
-
+info = struct('cycle', NaN, 'final', NaN);
 T = double(Tt);
 R = double(Rt);
 
@@ -19,7 +19,8 @@ if ~isequal(size(T), sz)
 end
 N = length(sz);
  
-idx_lin = find(R(:) > tol);
+suppTol = 1e-9;
+idx_lin = find(R(:) > suppTol);
 M = numel(idx_lin);
 if M == 0
     error('R has no nonzero entries.');
@@ -28,7 +29,8 @@ end
 % relative, per-entry magnitude check (not one global absolute threshold)
 magR = R(idx_lin);
 magDiff = abs(abs(T(idx_lin)) - magR);
-relDiff = magDiff ./ max(magR, tol);
+relDiff = magDiff ./ max(magR, suppTol);
+info.mag = max(relDiff);
 if any(relDiff > tol)
     if verbose
         [worst, w] = max(relDiff);
@@ -105,7 +107,7 @@ if ~all_touched_known
     Vperp = null_rational(A.');    % exact rational left-null-space basis
     L = size(Vperp, 2);
     rhs_fixed = rhs;
-    ok = true;
+    info.cycle = 0;
     if L > 0
         [Vr, pivcols] = rref(Vperp.');
         for c = 1:L
@@ -113,6 +115,7 @@ if ~all_touched_known
             pc = pivcols(c);
             cyc = v * rhs_fixed;
             k = round(cyc/(2*pi));
+            info.cycle = max(info.cycle, abs(cyc - 2*pi*k));
             if abs(cyc - 2*pi*k) > max(tol, 1e-6)
                 if verbose
                     fprintf(['FindPhaseUnitaries: cycle %d is inconsistent ' ...
@@ -136,20 +139,18 @@ end
  
 % ---- final verification (authoritative pass/fail check) ----
 ok = true;
+residAll = zeros(M, 1);
 for r = 1:M
     p = R(idx_lin(r));
     for d = 1:N
         p = p * Uvals{d}(Idx(r,d));
     end
-    resid = abs(p - T(idx_lin(r)));
-    if resid > max(tol, 1e-6)*max(1,R(idx_lin(r)))
-        if verbose
-            fprintf(['FindPhaseUnitaries: final check failed at support entry %d ' ...
-                     '(reconstructed=%.6g%+.6gi, target=%.6g%+.6gi, residual=%.3g)\n'], ...
-                     r, real(p), imag(p), real(T(idx_lin(r))), imag(T(idx_lin(r))), resid);
-        end
-        ok = false; break
-    end
+    residAll(r) = abs(p - T(idx_lin(r))) / max(1, R(idx_lin(r)));
+end
+[info.final, w] = max(residAll);
+ok = info.final <= max(tol, 1e-6);
+if ~ok && verbose
+    fprintf('FindPhaseUnitaries: final check failed at support entry %d (residual=%.3g)\n', w, info.final);
 end
  
 if ~ok
