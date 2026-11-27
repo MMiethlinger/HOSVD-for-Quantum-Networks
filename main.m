@@ -40,17 +40,17 @@ addpath( ...
 %end
 
 
-%dims       = [2 3 4 5 6 7 8 9 10];
-%numTrials  = [2000000 1048544 303371 48085 6526 784 80 25 10];
-%numTrials  = 2*[1 1 1 1 1];
-%means     = zeros(1, length(dims));
-%variances = zeros(1, length(dims));
+% dims       = [2 3 4 5 6 7 8 9 10];
+% numTrials  = [2000000 1048544 303371 48085 6526 784 80 25 10];
+% numTrials  = 2*[1 1 1 1 1];
+% means     = zeros(1, length(dims));
+% variances = zeros(1, length(dims));
 
-dim = 2;
+dim = 3;
 %numTrials  = [10^6, 28*10^4, 2400, 10];
-numTrials = [10^5, 10^5]%[10^5, 10^5];
+numTrials = [10^3]%[10^5, 10^5];
 %networkSize = [3,4,5,6];
-networkSize = [3, 4];
+networkSize = [4];
 means     = zeros(1, length(networkSize));
 variances = zeros(1, length(networkSize));
 

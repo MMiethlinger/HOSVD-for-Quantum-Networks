@@ -16,17 +16,19 @@ threw    = false(1, numTrials);
 infoMag = nan(1,numTrials); 
 infoCycle = nan(1,numTrials); 
 infoFinal = nan(1,numTrials);
+minCoeff = nan(1, numTrials);
 
 for trial = 1:numTrials
     if mod(trial, 20000) == 0
         save(sprintf('diagnostics_partial_size%d_dim%d.mat', networkSize, dim), ...
-     'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal');
+     'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal','minCoeff');
     end
     seedState = rng;   % snapshot the RNG state before this trial's randomness is drawn
     
     % Calling the function to get a state
     [test, coeff] = RandomNetworkState(d, N);
     gaps(trial) = MinSpectralGap(coeff, N);
+    minCoeff(trial) = min(coeff(:));
     t0 = tic;
     
     try
@@ -61,8 +63,8 @@ end
 successfulTimes = times(times > 0);
 ts = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
 save(sprintf('diagnostics_size%d_dim%d_n%d_%s.mat', networkSize, dim, numTrials, ts), ...
-     'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal');
-filename = sprintf('successful_times_size%d_n%d_%s.mat', networkSize, numTrials, ts);
+     'gaps', 'maxDiffs', 'failed', 'threw', 'times', 'infoMag', 'infoCycle', 'infoFinal','minCoeff');
+filename = sprintf('successful_times_size%d_dim%d_n%d_%s.mat', networkSize, dim, numTrials, ts);
 save(filename, 'successfulTimes');
 
 completedTimes = times(times > 0);
